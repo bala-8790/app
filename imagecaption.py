@@ -1,4 +1,3 @@
-
 import streamlit as st
 import torch
 import torchvision
@@ -19,7 +18,7 @@ def load_models():
 
 seg_model, caption_model, feature_extractor, tokenizer = load_models()
 
-st.title("Image Captioning & Segmentation App")
+st.title("🖼️ Image Captioning & Segmentation App")
 
 mode = st.radio("Choose input mode:", ["Upload Image", "Live Webcam", "USB Mobile Camera (DroidCam)"])
 
@@ -48,22 +47,21 @@ if mode == "Upload Image":
     uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
     if uploaded_file:
         image = Image.open(uploaded_file).convert("RGB")
-        st.image(image, caption="Original Image", use_column_width=True)
+        st.image(image, caption="Original Image", use_container_width=True)
         segmented, caption = process_frame(image)
-        st.image(segmented, caption="Segmented Image", use_column_width=True)
+        st.image(segmented, caption="Segmented Image", use_container_width=True)
         st.markdown(f"**Caption:** {caption}")
 
 elif mode in ["Live Webcam", "USB Mobile Camera (DroidCam)"]:
     st.subheader("Camera Capture")
-    default_index = 1 if mode == "USB Mobile Camera (DroidCam)" else 0
-    camera_index = st.selectbox("Select Camera Index", [0, 1, 2, 3], index=default_index, help="Try different indexes if camera doesn't work.")
-    capture_button = st.button("Capture Frame")
+    camera_index = 1 if mode == "USB Mobile Camera (DroidCam)" else 0
+    capture_button = st.button("📸 Capture Frame")
 
     if capture_button:
         cap = cv2.VideoCapture(camera_index, cv2.CAP_DSHOW)
 
         if not cap.isOpened():
-            st.error("Unable to access the camera. Try another index.")
+            st.error("Unable to access the camera. Try switching camera input.")
         else:
             ret, frame = cap.read()
             cap.release()
@@ -71,9 +69,9 @@ elif mode in ["Live Webcam", "USB Mobile Camera (DroidCam)"]:
             if ret:
                 rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 pil_image = Image.fromarray(rgb_image)
-                st.image(pil_image, caption="Captured Frame", use_column_width=True)
+                st.image(pil_image, caption="Captured Frame", use_container_width=True)
                 segmented, caption = process_frame(pil_image)
-                st.image(segmented, caption="Segmented Frame", use_column_width=True)
+                st.image(segmented, caption="Segmented Frame", use_container_width=True)
                 st.markdown(f"**Caption:** {caption}")
             else:
                 st.error("Failed to capture from camera.")
